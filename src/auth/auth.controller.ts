@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SocialLoginDto, AuthResponseDto } from './dto/social-login.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { HmacAuthGuard } from './hmac-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,13 +17,17 @@ export class AuthController {
     throw new Error('Invalid provider');
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HmacAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
   }
+@Get('google/callback')
+async googleAuthRedirect(@Request() req) {
+  return this.authService.googleLogin(req);
+}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HmacAuthGuard)
   @Get('verify')
   verifyToken(@Request() req) {
     return {

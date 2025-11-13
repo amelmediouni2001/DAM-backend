@@ -10,13 +10,15 @@ export class SocialLoginDto {
 }
 
 export class AuthResponseDto {
-  accessToken: string;
+  providerId: string;
+  authToken: string;
   user: {
     id: string;
     email: string;
     name: string;
     photoUrl?: string;
     provider: string;
+    providerId: string;
     score: number;
     level: number;
   };

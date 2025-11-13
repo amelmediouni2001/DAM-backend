@@ -4,7 +4,6 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
@@ -30,7 +29,6 @@ interface FacebookUserInfo {
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private jwtService: JwtService,
   ) {}
 
   async googleLogin(token: string) {
@@ -172,21 +170,22 @@ async facebookLogin(token: string) {
 
   private generateAuthResponse(user: UserDocument) {
     try {
+      const crypto = require('crypto');
+      const hmacSecret = process.env.HMAC_SECRET || process.env.JWT_SECRET || 'default-secret-change-in-production';
+
       console.log('Generating auth response for user:', user._id);
       
-      const payload = {
-        sub: String(user._id),
-        email: user.email,
-        provider: user.provider,
-      };
-
-      // Generate JWT token
-      const accessToken = this.jwtService.sign(payload);
+      // Generate HMAC signature using providerId
+      const providerId = user.providerId || String(user._id);
+      const authToken = crypto
+        .createHmac('sha256', hmacSecret)
+        .update(providerId)
+        .digest('hex');
       
-      console.log('JWT token generated:', accessToken ? `${accessToken.substring(0, 20)}...` : 'NULL');
+      console.log('HMAC authToken generated:', authToken ? `${authToken.substring(0, 20)}...` : 'NULL');
 
-      if (!accessToken) {
-        throw new InternalServerErrorException('Failed to generate JWT token');
+      if (!authToken) {
+        throw new InternalServerErrorException('Failed to generate authentication token');
       }
 
       const safeUser = {
@@ -197,10 +196,12 @@ async facebookLogin(token: string) {
         provider: user.provider ?? '',
         score: user.score ?? 0,
         level: user.level ?? 1,
+        providerId: providerId ?? '',
       };
 
       const response = {
-        accessToken,
+        providerId,
+        authToken,
         user: safeUser,
       };
 
@@ -214,6 +215,21 @@ async facebookLogin(token: string) {
 
   async validateUser(userId: string): Promise<UserDocument> {
     const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    if (user.isActive === false) {
+      throw new UnauthorizedException('User account is inactive');
+    }
+    return user;
+  }
+
+  // New method: Validate user by providerId (Google OAuth sub)
+  async validateUserByProviderId(providerId: string, provider: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({
+      provider,
+      providerId,
+    });
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
