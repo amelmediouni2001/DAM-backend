@@ -42,8 +42,8 @@ export class AvatarResponseDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  customization: AvatarCustomizationResponseDto;
+  @ApiProperty({ required: false })
+  customization?: AvatarCustomizationResponseDto;
 
   @ApiProperty()
   isActive: boolean;
@@ -53,6 +53,22 @@ export class AvatarResponseDto {
 
   @ApiProperty()
   avatarImageUrl: string;
+
+  // Ready Player Me specific fields
+  @ApiProperty({ required: false })
+  readyPlayerMeId?: string;
+
+  @ApiProperty({ required: false })
+  readyPlayerMeAvatarUrl?: string;
+
+  @ApiProperty({ required: false })
+  readyPlayerMeGlbUrl?: string;
+
+  @ApiProperty({ required: false })
+  readyPlayerMeThumbnailUrl?: string;
+
+  @ApiProperty({ required: false })
+  isReadyPlayerMe?: boolean;
 
   @ApiProperty()
   energy: number;

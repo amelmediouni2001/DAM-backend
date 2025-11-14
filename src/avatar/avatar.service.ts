@@ -13,9 +13,53 @@ export class AvatarService {
   async create(userId: string, createAvatarDto: CreateAvatarDto): Promise<Avatar> {
     const objectId = new Types.ObjectId(userId);
 
+    // Check if user has any avatars
+    const existingAvatars = await this.avatarModel.countDocuments({ userId: objectId });
+    const isFirstAvatar = existingAvatars === 0;
+
+    // If this is the first avatar or user wants to set as active, deactivate others
+    if (isFirstAvatar) {
+      await this.avatarModel.updateMany({ userId: objectId }, { isActive: false });
+    }
+
+    // Detect if this is a Ready Player Me avatar
+    const isReadyPlayerMe = !!(
+      createAvatarDto.readyPlayerMeId ||
+      createAvatarDto.readyPlayerMeAvatarUrl ||
+      createAvatarDto.readyPlayerMeThumbnailUrl
+    );
+
+    // Use Ready Player Me thumbnail as avatarImageUrl if provided
+    let avatarImageUrl = createAvatarDto.avatarImageUrl;
+    if (isReadyPlayerMe && !avatarImageUrl && createAvatarDto.readyPlayerMeThumbnailUrl) {
+      avatarImageUrl = createAvatarDto.readyPlayerMeThumbnailUrl;
+    }
+
+    // Provide default customization for Ready Player Me avatars if not provided
+    const customization = createAvatarDto.customization || (isReadyPlayerMe ? {
+      style: 'realistic',
+      bodyType: 'fullbody',
+      skinTone: 'medium',
+      hairstyle: 'short',
+      hairColor: 'brown',
+      eyeStyle: 'round',
+      eyeColor: 'brown',
+      clothingType: 'casual',
+      clothingColor: 'blue',
+      accessories: [],
+    } : undefined);
+
     const newAvatar = new this.avatarModel({
       userId: objectId,
-      ...createAvatarDto,
+      name: createAvatarDto.name,
+      customization: customization,
+      avatarImageUrl: avatarImageUrl || '',
+      // Ready Player Me specific fields
+      readyPlayerMeId: createAvatarDto.readyPlayerMeId,
+      readyPlayerMeAvatarUrl: createAvatarDto.readyPlayerMeAvatarUrl,
+      readyPlayerMeGlbUrl: createAvatarDto.readyPlayerMeGlbUrl,
+      readyPlayerMeThumbnailUrl: createAvatarDto.readyPlayerMeThumbnailUrl,
+      isReadyPlayerMe: isReadyPlayerMe,
       energy: 100,
       experience: 0,
       level: 1,
@@ -25,9 +69,15 @@ export class AvatarService {
         unlocked: ['outfit_default'],
         equipped: 'outfit_default',
       },
+      isActive: isFirstAvatar, // First avatar is active by default
     });
 
-    return newAvatar.save();
+    try {
+      return await newAvatar.save();
+    } catch (error) {
+      console.error('Error creating avatar:', error);
+      throw new BadRequestException(`Failed to create avatar: ${error.message}`);
+    }
   }
 
   // Get all avatars for a user
@@ -98,10 +148,16 @@ export class AvatarService {
     await this.avatarModel.updateMany({ userId: userObjectId }, { isActive: false });
 
     // Activate the selected avatar
-    const updated = await this.avatarModel.findByIdAndUpdate(avatarObjectId, { isActive: true }, { new: true });
+    const updated = await this.avatarModel.findByIdAndUpdate(
+      avatarObjectId,
+      { isActive: true },
+      { new: true },
+    );
+    
     if (!updated) {
       throw new NotFoundException(`Avatar with ID ${avatarId} not found`);
     }
+    
     return updated;
   }
 
@@ -145,10 +201,16 @@ export class AvatarService {
   async updateExpression(avatarId: string, expression: string): Promise<Avatar> {
     const objectId = new Types.ObjectId(avatarId);
 
-    const updated = await this.avatarModel.findByIdAndUpdate(objectId, { expression }, { new: true });
+    const updated = await this.avatarModel.findByIdAndUpdate(
+      objectId,
+      { expression },
+      { new: true },
+    );
+    
     if (!updated) {
       throw new NotFoundException(`Avatar with ID ${avatarId} not found`);
     }
+    
     return updated;
   }
 
@@ -156,10 +218,16 @@ export class AvatarService {
   async updateState(avatarId: string, state: string): Promise<Avatar> {
     const objectId = new Types.ObjectId(avatarId);
 
-    const updated = await this.avatarModel.findByIdAndUpdate(objectId, { state }, { new: true });
+    const updated = await this.avatarModel.findByIdAndUpdate(
+      objectId,
+      { state },
+      { new: true },
+    );
+    
     if (!updated) {
       throw new NotFoundException(`Avatar with ID ${avatarId} not found`);
     }
+    
     return updated;
   }
 
@@ -175,10 +243,16 @@ export class AvatarService {
     let newEnergy = avatar.energy + energyDelta;
     newEnergy = Math.max(0, Math.min(100, newEnergy)); // Clamp between 0-100
 
-    const updated = await this.avatarModel.findByIdAndUpdate(objectId, { energy: newEnergy }, { new: true });
+    const updated = await this.avatarModel.findByIdAndUpdate(
+      objectId,
+      { energy: newEnergy },
+      { new: true },
+    );
+    
     if (!updated) {
       throw new NotFoundException(`Avatar with ID ${avatarId} not found`);
     }
+    
     return updated;
   }
 
@@ -212,6 +286,7 @@ export class AvatarService {
     if (!updated) {
       throw new NotFoundException(`Avatar with ID ${avatarId} not found`);
     }
+    
     return updated;
   }
 

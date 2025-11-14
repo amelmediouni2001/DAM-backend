@@ -87,19 +87,53 @@ export class CreateAvatarDto {
   @IsString()
   name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: CreateAvatarCustomizationDto,
-    description: 'Avatar customization details',
+    description: 'Avatar customization details (optional for Ready Player Me avatars)',
   })
   @ValidateNested()
   @Type(() => CreateAvatarCustomizationDto)
-  customization: CreateAvatarCustomizationDto;
+  @IsOptional()
+  customization?: CreateAvatarCustomizationDto;
 
   @ApiPropertyOptional({
     example: 'https://example.com/avatar.png',
-    description: 'URL to the avatar image',
+    description: 'URL to the avatar image (legacy or Ready Player Me thumbnail)',
   })
   @IsString()
   @IsOptional()
   avatarImageUrl?: string;
+
+  // Ready Player Me specific fields
+  @ApiPropertyOptional({
+    example: '64bfa15f0e72c63d7c3f5a5e',
+    description: 'Ready Player Me avatar ID',
+  })
+  @IsString()
+  @IsOptional()
+  readyPlayerMeId?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://models.readyplayer.me/64bfa15f0e72c63d7c3f5a5e.glb',
+    description: 'Ready Player Me full avatar URL',
+  })
+  @IsString()
+  @IsOptional()
+  readyPlayerMeAvatarUrl?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://models.readyplayer.me/64bfa15f0e72c63d7c3f5a5e.glb',
+    description: 'Ready Player Me 3D model GLB URL',
+  })
+  @IsString()
+  @IsOptional()
+  readyPlayerMeGlbUrl?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://models.readyplayer.me/64bfa15f0e72c63d7c3f5a5e.png?scene=fullbody-portrait-v1',
+    description: 'Ready Player Me thumbnail/render URL',
+  })
+  @IsString()
+  @IsOptional()
+  readyPlayerMeThumbnailUrl?: string;
 }

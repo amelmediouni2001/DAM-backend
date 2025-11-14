@@ -3,90 +3,104 @@ import { Document, Types } from 'mongoose';
 
 export type AvatarDocument = Avatar & Document;
 
-// Sub-schema for Avatar customization
-@Schema({ _id: false })
+@Schema()
 export class AvatarCustomization {
-  @Prop({ type: String, enum: ['anime', 'cartoon', 'pixel', 'realistic'], default: 'anime' })
+  @Prop({ required: true, enum: ['anime', 'cartoon', 'pixel', 'realistic'] })
   style: string;
 
-  // Character parts
   @Prop({ required: true })
-  bodyType: string; // e.g., 'slim', 'round', 'athletic'
+  bodyType: string;
 
   @Prop({ required: true })
-  skinTone: string; // e.g., 'light', 'medium', 'dark', 'brown'
+  skinTone: string;
 
   @Prop({ required: true })
-  hairstyle: string; // e.g., 'short', 'long', 'curly', 'straight'
+  hairstyle: string;
 
   @Prop({ required: true })
-  hairColor: string; // e.g., 'black', 'brown', 'blonde', 'red'
+  hairColor: string;
 
   @Prop({ required: true })
-  eyeStyle: string; // e.g., 'round', 'almond', 'cat', 'big'
+  eyeStyle: string;
 
   @Prop({ required: true })
-  eyeColor: string; // e.g., 'blue', 'brown', 'green'
+  eyeColor: string;
 
   @Prop()
-  clothingType: string; // e.g., 'casual', 'formal', 'sporty'
+  clothingType: string;
 
   @Prop()
   clothingColor: string;
 
-  @Prop()
-  accessories: string[]; // e.g., ['glasses', 'hat', 'earrings']
+  @Prop({ type: [String], default: [] })
+  accessories: string[];
 }
 
-export const AvatarCustomizationSchema = SchemaFactory.createForClass(AvatarCustomization);
+@Schema()
+export class AvatarOutfits {
+  @Prop({ type: [String], default: ['outfit_default'] })
+  unlocked: string[];
 
-// Main Avatar Schema
+  @Prop({ default: 'outfit_default' })
+  equipped: string;
+}
+
 @Schema({ timestamps: true })
 export class Avatar {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop({ required: true })
-  name: string; // Avatar name (e.g., "Luna", "Max")
+  name: string;
 
-  @Prop({ type: AvatarCustomizationSchema, required: true })
-  customization: AvatarCustomization;
+  @Prop({ type: AvatarCustomization, required: false })
+  customization?: AvatarCustomization; // Optional for Ready Player Me avatars
 
-  @Prop({ default: true })
-  isActive: boolean; // Is this the active avatar being used
+  @Prop({ default: false })
+  isActive: boolean;
 
-  @Prop({ type: String, enum: ['happy', 'sad', 'excited', 'thinking', 'neutral'], default: 'happy' })
+  @Prop({ 
+    enum: ['happy', 'sad', 'excited', 'thinking', 'neutral'],
+    default: 'happy'
+  })
   expression: string;
 
+  @Prop({ default: '' })
+  avatarImageUrl: string; // URL to the generated avatar image (legacy or Ready Player Me thumbnail)
+
+  // Ready Player Me specific fields
   @Prop()
-  avatarImageUrl: string; // URL to the generated avatar image
+  readyPlayerMeId?: string; // Ready Player Me avatar ID
 
-  @Prop({ default: 100 })
-  energy: number; // Avatar energy (0-100) for gameplay
+  @Prop()
+  readyPlayerMeAvatarUrl?: string; // Full Ready Player Me avatar URL
 
-  @Prop({ default: 0 })
-  experience: number; // XP gained by the avatar
+  @Prop()
+  readyPlayerMeGlbUrl?: string; // Ready Player Me 3D model GLB URL
 
-  @Prop({ default: 0 })
-  level: number; // Avatar level
+  @Prop()
+  readyPlayerMeThumbnailUrl?: string; // Ready Player Me thumbnail/render URL
 
-  @Prop({ type: String, enum: ['idle', 'playing', 'celebrating', 'thinking'], default: 'idle' })
-  state: string; // Current state during gameplay
+  @Prop({ default: false })
+  isReadyPlayerMe?: boolean; // Flag to indicate if this is a Ready Player Me avatar
 
-  @Prop({
-    type: {
-      unlocked: [String], // List of unlocked outfit IDs
-      equipped: String, // Currently equipped outfit ID
-    },
-    default: {
-      unlocked: ['outfit_default'],
-      equipped: 'outfit_default',
-    },
+  @Prop({ default: 100, min: 0, max: 100 })
+  energy: number;
+
+  @Prop({ default: 0, min: 0 })
+  experience: number;
+
+  @Prop({ default: 1, min: 1 })
+  level: number;
+
+  @Prop({ 
+    enum: ['idle', 'playing', 'celebrating', 'thinking'],
+    default: 'idle'
   })
-  outfits: {
-    unlocked: string[];
-    equipped: string;
-  };
+  state: string;
+
+  @Prop({ type: AvatarOutfits, default: () => ({ unlocked: ['outfit_default'], equipped: 'outfit_default' }) })
+  outfits: AvatarOutfits;
 
   @Prop()
   createdAt: Date;
@@ -97,6 +111,6 @@ export class Avatar {
 
 export const AvatarSchema = SchemaFactory.createForClass(Avatar);
 
-// Create indices
-AvatarSchema.index({ userId: 1 });
+// Add indexes for better query performance
 AvatarSchema.index({ userId: 1, isActive: 1 });
+AvatarSchema.index({ userId: 1, createdAt: -1 });
