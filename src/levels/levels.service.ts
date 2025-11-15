@@ -27,6 +27,10 @@ export class LevelsService implements OnModuleInit {
                 'Batman needs your help to decode the Riddler’s sonic message on a Gotham rooftop.',
             expectedNotes: ['do', 'mi', 'sol', 'sol', 'fa', 're'],
             difficulty: 2,
+            backgroundUrl: "https://yourcdn.com/batman_bg.png",
+            bossUrl: "https://yourcdn.com/riddler.png",
+            musicUrl: "https://yourcdn.com/batman_theme.mp3",
+            starsUnlocked: 0,
             },
             {
             title: 'Web of Resonance',
@@ -35,6 +39,10 @@ export class LevelsService implements OnModuleInit {
                 'Spider-Man must disable Vulture’s sonic device using precise musical frequencies.',
             expectedNotes: ['la', 'do', 're', 'fa', 'mi', 'mi'],
             difficulty: 3,
+            backgroundUrl: "https://yourcdn.com/spiderman_bg.png",
+            bossUrl: "https://yourcdn.com/vulture.png",
+            musicUrl: "https://yourcdn.com/spiderman_theme.mp3",
+            starsUnlocked: 0,
             },
         ]);
         console.log('🌱 Levels seeded successfully!');

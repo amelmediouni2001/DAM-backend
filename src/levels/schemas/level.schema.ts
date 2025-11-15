@@ -7,7 +7,7 @@ export class Level {
   title: string;
 
   @Prop({ required: true })
-  theme: string; // Batman, Spider-Man
+  theme: string;
 
   @Prop({ required: true })
   story: string;
@@ -17,7 +17,20 @@ export class Level {
 
   @Prop({ required: true })
   difficulty: number;
+
+  @Prop({ required: false })
+  backgroundUrl: string;
+
+  @Prop({ required: false })
+  bossUrl: string;
+
+  @Prop({ required: false })
+  musicUrl: string;
+
+  @Prop({ required: false, default: 0 })
+  starsUnlocked: number;
 }
+
 
 export type LevelDocument = Level & Document;
 export const LevelSchema = SchemaFactory.createForClass(Level);
