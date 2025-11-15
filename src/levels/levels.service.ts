@@ -5,6 +5,13 @@ import { Level, LevelDocument } from './schemas/level.schema';
 import { LevelProgress, LevelProgressDocument } from './schemas/progress.schema';
 import { CreateProgressDto } from './dto/create-progress.dto'; 
 
+interface UnlockedLevel {
+  levelId: string;
+  title: string;
+  unlocked: boolean;
+}
+
+
 @Injectable()
 export class LevelsService implements OnModuleInit {
     constructor(
@@ -61,6 +68,53 @@ export class LevelsService implements OnModuleInit {
     async findAll() {
     return this.levelModel.find();
     }
+
+    async getUnlockedLevels(userId: string) {
+        // Fetch all levels
+        const levels = await this.levelModel.find();
+
+        // Fetch this user's progress
+        const progress = await this.progressModel.find({ userId });
+
+        // Map completed levels by levelId
+        const completedByLevel: Record<string, boolean> = {};
+        progress.forEach(p => {
+            if (p.completed) {
+            completedByLevel[p.levelId] = true;
+            }
+        });
+
+        const result: UnlockedLevel[] = [];
+
+        for (let i = 0; i < levels.length; i++) {
+            const currentLevel = levels[i];
+
+            if (i === 0) {
+            result.push({
+                levelId: currentLevel.id,  // <-- IMPORTANT
+                title: currentLevel.title,
+                unlocked: true
+            });
+            continue;
+            }
+
+            const previousLevel = levels[i - 1];
+
+            const unlocked = completedByLevel[previousLevel.id] === true;
+
+            result.push({
+            levelId: currentLevel.id,    // <-- IMPORTANT
+            title: currentLevel.title,
+            unlocked
+            });
+        }
+
+        return {
+            userId,
+            levels: result
+        };
+        }
+
 
     test() {
         return { message: 'Levels module still working!' };
