@@ -1,0 +1,60 @@
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Level, LevelDocument } from './schemas/level.schema';
+import { LevelProgress, LevelProgressDocument } from './schemas/progress.schema';
+import { CreateProgressDto } from './dto/create-progress.dto'; 
+
+@Injectable()
+export class LevelsService implements OnModuleInit {
+    constructor(
+    @InjectModel(Level.name)
+    private levelModel: Model<LevelDocument>,
+
+    @InjectModel(LevelProgress.name)
+    private progressModel: Model<LevelProgressDocument>,
+    ) {}
+
+    async onModuleInit() {
+        const count = await this.levelModel.countDocuments();
+        if (count === 0) {
+        console.log('🌱 Seeding levels...');
+        await this.levelModel.insertMany([
+            {
+            title: 'Night of the Shadow Riddle',
+            theme: 'Batman',
+            story:
+                'Batman needs your help to decode the Riddler’s sonic message on a Gotham rooftop.',
+            expectedNotes: ['do', 'mi', 'sol', 'sol', 'fa', 're'],
+            difficulty: 2,
+            },
+            {
+            title: 'Web of Resonance',
+            theme: 'Spider-Man',
+            story:
+                'Spider-Man must disable Vulture’s sonic device using precise musical frequencies.',
+            expectedNotes: ['la', 'do', 're', 'fa', 'mi', 'mi'],
+            difficulty: 3,
+            },
+        ]);
+        console.log('🌱 Levels seeded successfully!');
+        }
+    }
+
+    async findOne(id: string) {
+        return this.levelModel.findById(id);
+    }
+
+    async saveProgress(dto: CreateProgressDto) {
+    const progress = new this.progressModel(dto);
+    return progress.save();
+    }
+
+    async findAll() {
+    return this.levelModel.find();
+    }
+
+    test() {
+        return { message: 'Levels module still working!' };
+    }
+}
