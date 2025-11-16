@@ -4,6 +4,9 @@ import { Document } from 'mongoose';
 @Schema()
 export class Level {
   @Prop({ required: true })
+  order: number;  // determines level order in the map
+
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
@@ -29,8 +32,28 @@ export class Level {
 
   @Prop({ required: false, default: 0 })
   starsUnlocked: number;
-}
 
+  @Prop({
+    type: {
+      x: Number,
+      y: Number
+    },
+    required: true
+  })
+  mapPosition: {
+    x: number;
+    y: number;
+  };
+
+  @Prop({ required: true })
+  islandImageUrl: string;
+
+  @Prop({ required: false })
+  nextLevelId?: string;
+
+  @Prop({ required: false })
+  colorTheme?: string; // hex string for UI color
+}
 
 export type LevelDocument = Level & Document;
 export const LevelSchema = SchemaFactory.createForClass(Level);

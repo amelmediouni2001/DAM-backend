@@ -4,6 +4,7 @@ import { CreateProgressDto } from './dto/create-progress.dto';
 import { ApiOperation} from '@nestjs/swagger/dist/decorators/api-operation.decorator';
 import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { ApiParam } from '@nestjs/swagger';
+import { UnlockedLevelsResponseDto } from './dto/unlocked-level-response.dto';
 
 @Controller('levels')
 export class LevelsController {
@@ -30,10 +31,18 @@ export class LevelsController {
 
     @Get('unlocked/:userId')
     @ApiOperation({ summary: 'Get unlocked levels for a specific user' })
-    @ApiParam({ name: 'userId', type: String })
-    @ApiOkResponse({ description: 'Returns list of unlocked/locked levels' })
-    async getUnlocked(@Param('userId') userId: string): Promise<any> {
+    @ApiOkResponse({ type: UnlockedLevelsResponseDto })
+    async getUnlocked(@Param('userId') userId: string) {
       return this.levelsService.getUnlockedLevels(userId);
     }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get a specific level by ID' })
+    @ApiParam({ name: 'id', description: 'Level ID' })
+    async getOne(@Param('id') id: string) {
+      return this.levelsService.findOne(id);
+    }
+
+
 
 }
