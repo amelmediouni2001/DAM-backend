@@ -45,7 +45,7 @@ export class LevelsService implements OnModuleInit {
             bossUrl: "https://i.ibb.co/.../riddler.png",
             musicUrl: "https://i.ibb.co/.../batman.mp3",
             colorTheme: "#1A1A1A",
-            mapPosition: { x: 0.15, y: 0.30 },
+            mapPosition: { x: 0.08, y: 0.05 },
             islandImageUrl: "https://i.ibb.co/.../island1.png",
             nextLevelId: null
         },
@@ -60,7 +60,7 @@ export class LevelsService implements OnModuleInit {
             bossUrl: "https://i.ibb.co/.../vulture.png",
             musicUrl: "https://i.ibb.co/.../spider.mp3",
             colorTheme: "#E53935",
-            mapPosition: { x: 0.32, y: 0.48 },
+            mapPosition: { x: 0.11, y: 0.07 },
             islandImageUrl: "https://i.ibb.co/.../island2.png",
             nextLevelId: null // will be replaced after insertion
         }
@@ -84,38 +84,40 @@ export class LevelsService implements OnModuleInit {
 
     async getUnlockedLevels(userId: string): Promise<UnlockedLevelsResponseDto> {
     const levels = await this.levelModel.find().lean();
-    const progress = await this.progressModel.find({ userId }).lean();
+    const progressList = await this.progressModel.find({ userId }).lean();
 
-    const completedByLevel: Record<string, boolean> = {};
-    progress.forEach(p => {
-        if (p.completed) {
-        completedByLevel[p.levelId] = true;
-        }
+    // Map user progress by levelId
+    const progressByLevel: Record<string, number> = {};
+    progressList.forEach(p => {
+        progressByLevel[p.levelId] = Math.max(progressByLevel[p.levelId] || 0, p.stars || 0);
     });
 
     const result = levels.map((lvl, index) => {
-        const unlocked =
+        const levelId = lvl._id.toString();
+
+        const isUnlocked =
         index === 0
             ? true
-            : completedByLevel[levels[index - 1]._id.toString()] === true;
+            : (progressByLevel[levels[index - 1]._id.toString()] ?? 0) > 0;
 
         return {
-        levelId: lvl._id.toString(),
+        levelId,
         title: lvl.title,
         theme: lvl.theme,
-        unlocked,
-        starsUnlocked: lvl.starsUnlocked,
+        unlocked: isUnlocked,
+        starsUnlocked: progressByLevel[levelId] || 0, // ⬅ REAL PROGRESS
         backgroundUrl: lvl.backgroundUrl,
         bossUrl: lvl.bossUrl,
-        musicUrl: lvl.musicUrl,
+        musicUrl: lvl.musicUrl
         };
     });
 
     return {
         userId,
-        levels: result,
+        levels: result
     };
     }
+
 
 
 
