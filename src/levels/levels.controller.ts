@@ -1,0 +1,48 @@
+import { Controller, Get, Body, Post, Param } from '@nestjs/common';
+import { LevelsService } from './levels.service';
+import { CreateProgressDto } from './dto/create-progress.dto';
+import { ApiOperation} from '@nestjs/swagger/dist/decorators/api-operation.decorator';
+import { ApiOkResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
+import { ApiParam } from '@nestjs/swagger';
+import { UnlockedLevelsResponseDto } from './dto/unlocked-level-response.dto';
+
+@Controller('levels')
+export class LevelsController {
+  constructor(private readonly levelsService: LevelsService) {}
+
+    @Get('test')
+    test() {
+        return this.levelsService.test();
+    }
+
+    @Post('progress')
+    @ApiOperation({ summary: 'Save user progress for a level' })
+    @ApiOkResponse({ description: 'Progress saved successfully' })
+    async saveProgress(@Body() dto: CreateProgressDto) {
+    return this.levelsService.saveProgress(dto);
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Get all levels' })
+    @ApiOkResponse({ description: 'Returns all levels' })
+    async getAllLevels() {
+    return this.levelsService.findAll();
+    }
+
+    @Get('unlocked/:userId')
+    @ApiOperation({ summary: 'Get unlocked levels for a specific user' })
+    @ApiOkResponse({ type: UnlockedLevelsResponseDto })
+    async getUnlocked(@Param('userId') userId: string) {
+      return this.levelsService.getUnlockedLevels(userId);
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Get a specific level by ID' })
+    @ApiParam({ name: 'id', description: 'Level ID' })
+    async getOne(@Param('id') id: string) {
+      return this.levelsService.findOne(id);
+    }
+
+
+
+}
