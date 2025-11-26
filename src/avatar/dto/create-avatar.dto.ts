@@ -87,13 +87,14 @@ export class CreateAvatarDto {
   @IsString()
   name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: CreateAvatarCustomizationDto,
     description: 'Avatar customization details',
   })
   @ValidateNested()
+  @IsOptional()
   @Type(() => CreateAvatarCustomizationDto)
-  customization: CreateAvatarCustomizationDto;
+  customization?: CreateAvatarCustomizationDto;
 
   @ApiPropertyOptional({
     example: 'https://example.com/avatar.png',

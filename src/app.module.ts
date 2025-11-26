@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { AvatarModule } from './avatar/avatar.module';
 import { LevelsModule } from './levels/levels.module';
+import { MusicModule } from './music/music.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LevelsModule } from './levels/levels.module';
     AuthModule,
     AvatarModule,
     LevelsModule,
+    MusicModule,
   ],
 })
 export class AppModule {}

@@ -49,8 +49,8 @@ export class Avatar {
   @Prop({ required: true })
   name: string; // Avatar name (e.g., "Luna", "Max")
 
-  @Prop({ type: AvatarCustomizationSchema, required: true })
-  customization: AvatarCustomization;
+  @Prop({ type: AvatarCustomizationSchema, required: false })
+  customization?: AvatarCustomization;
 
   @Prop({ default: true })
   isActive: boolean; // Is this the active avatar being used
