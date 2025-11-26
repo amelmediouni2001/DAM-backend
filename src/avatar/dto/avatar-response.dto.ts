@@ -42,8 +42,8 @@ export class AvatarResponseDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  customization: AvatarCustomizationResponseDto;
+  @ApiPropertyOptional()
+  customization?: AvatarCustomizationResponseDto;
 
   @ApiProperty()
   isActive: boolean;
