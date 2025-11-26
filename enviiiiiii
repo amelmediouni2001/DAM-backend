@@ -1,0 +1,23 @@
+# MongoDB Connection
+MONGODB_URI=mongodb://localhost:27017/pianokids
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key-change-this
+JWT_EXPIRATION=7d
+### ACRCloud Configuration (Music Recognition)
+# Get your credentials from: https://console.acrcloud.com/
+ACR_HOST=identify-eu-west-1.acrcloud.com
+ACR_ACCESS_KEY=c384af959f2c57669e82833a04c4ec00
+ACR_ACCESS_SECRET=ibbXyOuUVFLSy0XSxZTGN3k5NKSOaHKsfo4odWef
+# Google OAuth
+GOOGLE_CLIENT_ID=24237641156-i9auj11eib39mmuv76vg3jpd3a4enfd5.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+
+# Facebook OAuth
+FACEBOOK_APP_ID=1347193153711604
+FACEBOOK_APP_SECRET=a9fe78d632df905a101774403328480e
+
+
+# App Config
+FRONTEND_URL=http://localhost:3000
