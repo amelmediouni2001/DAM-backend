@@ -1,13 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Avatar, AvatarDocument } from '../schemas/avatar.schema';
 import { CreateAvatarDto } from './dto/create-avatar.dto';
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
+import { GenerateAvatarFromPromptDto } from './dto/generate-avatar-prompt.dto';
+import { GeminiService } from '../utils/gemini.util';
 
 @Injectable()
 export class AvatarService {
-  constructor(@InjectModel(Avatar.name) private avatarModel: Model<AvatarDocument>) {}
+  private readonly logger = new Logger(AvatarService.name);
+
+  constructor(
+    @InjectModel(Avatar.name) private avatarModel: Model<AvatarDocument>,
+    private geminiService: GeminiService,
+  ) {}
 
   // Create a new avatar
   async create(userId: string, createAvatarDto: CreateAvatarDto): Promise<Avatar> {
@@ -264,5 +271,103 @@ export class AvatarService {
       energy: avatar.energy,
       outfitsUnlocked: avatar.outfits.unlocked.length,
     };
+  }
+
+  // Generate AI avatar image using FAST image generation
+  private generateAIAvatarImage(prompt: string, style: string, name: string): string {
+    // Build CONCISE prompt for FASTER generation
+    const enhancedPrompt = `${style} avatar, ${prompt}, cute chibi, colorful, simple background`;
+    
+    // FASTEST option: Use Pollinations.ai with optimized settings
+    const encodedPrompt = encodeURIComponent(enhancedPrompt);
+    const seed = Math.floor(Math.random() * 100000);
+    
+    // Smaller size = MUCH faster generation (256x256 is 4x faster than 512x512!)
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=256&height=256&seed=${seed}&enhance=false&nologo=true`;
+    
+    this.logger.log(`🎨 Fast AI avatar URL: ${imageUrl}`);
+    this.logger.log(`📝 Prompt: "${enhancedPrompt}"`);
+    this.logger.log(`⚡ Size: 256x256 (optimized for speed)`);
+    this.logger.log(`🔢 Seed: ${seed}`);
+    
+    return imageUrl;
+  }
+
+  // Generate avatar PREVIEW from prompt using Gemini AI (does NOT save to database)
+  async generateAvatarFromPrompt(
+    userId: string,
+    generateDto: GenerateAvatarFromPromptDto,
+  ): Promise<{
+    previewData: any;
+    description: string;
+    suggestedAttributes: any;
+  }> {
+    const objectId = new Types.ObjectId(userId);
+    const style = generateDto.style || 'cartoon';
+
+    // Run safety check and description generation in parallel for faster response
+    const [safetyCheck, aiResponse] = await Promise.all([
+      this.geminiService.validatePromptSafety(generateDto.prompt),
+      this.geminiService.generateAvatarDescription(generateDto.prompt, style)
+    ]);
+
+    if (!safetyCheck.isSafe) {
+      throw new BadRequestException(`Prompt is not appropriate: ${safetyCheck.reason}`);
+    }
+
+    // Generate REAL AI avatar image using Pollinations.ai
+    const avatarImageUrl = this.generateAIAvatarImage(generateDto.prompt, style, generateDto.name);
+
+    // Return preview data WITHOUT saving to database
+    const previewData = {
+      userId: objectId.toString(),
+      name: generateDto.name,
+      customization: {
+        style: style,
+        bodyType: aiResponse.suggestedAttributes.bodyType,
+        skinTone: aiResponse.suggestedAttributes.skinTone,
+        hairstyle: aiResponse.suggestedAttributes.hairstyle,
+        hairColor: aiResponse.suggestedAttributes.hairColor,
+        eyeStyle: aiResponse.suggestedAttributes.eyeStyle,
+        eyeColor: aiResponse.suggestedAttributes.eyeColor,
+        clothingType: aiResponse.suggestedAttributes.clothingType,
+        clothingColor: aiResponse.suggestedAttributes.clothingColor,
+        accessories: aiResponse.suggestedAttributes.accessories,
+      },
+      generationSource: 'gemini-ai',
+      aiGeneratedDescription: aiResponse.description,
+      avatarImageUrl: avatarImageUrl,
+    };
+
+    return {
+      previewData,
+      description: aiResponse.description,
+      suggestedAttributes: aiResponse.suggestedAttributes,
+    };
+  }
+
+  // Save AI-generated avatar to database (called after user approves preview)
+  async saveAIAvatar(userId: string, previewData: any): Promise<Avatar> {
+    const objectId = new Types.ObjectId(userId);
+
+    const newAvatar = new this.avatarModel({
+      userId: objectId,
+      name: previewData.name,
+      customization: previewData.customization,
+      generationSource: previewData.generationSource,
+      aiGeneratedDescription: previewData.aiGeneratedDescription,
+      avatarImageUrl: previewData.avatarImageUrl,
+      energy: 100,
+      experience: 0,
+      level: 1,
+      state: 'idle',
+      expression: 'happy',
+      outfits: {
+        unlocked: ['outfit_default'],
+        equipped: 'outfit_default',
+      },
+    });
+
+    return newAvatar.save();
   }
 }

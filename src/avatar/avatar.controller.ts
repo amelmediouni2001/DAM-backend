@@ -23,6 +23,7 @@ import { AvatarService } from './avatar.service';
 import { CreateAvatarDto } from './dto/create-avatar.dto';
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { AvatarResponseDto } from './dto/avatar-response.dto';
+import { GenerateAvatarFromPromptDto, AvatarGenerationResponseDto } from './dto/generate-avatar-prompt.dto';
 import { HmacAuthGuard } from '../auth/hmac-auth.guard';
 
 @ApiTags('Avatars')
@@ -404,5 +405,72 @@ export class AvatarController {
     @Param('outfitId') outfitId: string,
   ) {
     return this.avatarService.unlockOutfit(avatarId, outfitId);
+  }
+
+  // Gemini AI Avatar Generation
+
+  @Post('generate-from-prompt')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Generate avatar from AI prompt',
+    description: 'Generate a new avatar using Gemini AI based on a text prompt (e.g., "Naruto from anime", "Mickey Mouse")',
+  })
+  @ApiBody({
+    type: GenerateAvatarFromPromptDto,
+    description: 'Prompt and style for avatar generation',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Avatar generated successfully',
+    type: AvatarGenerationResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid prompt or generation failed',
+  })
+  async generateFromPrompt(
+    @Request() req,
+    @Body() generateDto: GenerateAvatarFromPromptDto,
+  ) {
+    const result = await this.avatarService.generateAvatarFromPrompt(
+      String(req.user._id),
+      generateDto,
+    );
+
+    // Return preview data WITHOUT avatarId (not saved yet)
+    return {
+      name: result.previewData.name,
+      description: result.description,
+      aiGeneratedDescription: result.previewData.aiGeneratedDescription,
+      suggestedAttributes: result.suggestedAttributes,
+      avatarImageUrl: result.previewData.avatarImageUrl,
+      generationSource: result.previewData.generationSource,
+      previewData: result.previewData, // Include full preview data for saving later
+    };
+  }
+
+  @Post('save-ai-avatar')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Save AI-generated avatar after preview',
+    description: 'Save the AI-generated avatar to database after user approves it',
+  })
+  async saveAIAvatar(
+    @Request() req,
+    @Body() body: { previewData: any },
+  ) {
+    const savedAvatar = await this.avatarService.saveAIAvatar(
+      String(req.user._id),
+      body.previewData,
+    );
+
+    return {
+      avatarId: String((savedAvatar as any)._id),
+      name: savedAvatar.name,
+      avatarImageUrl: savedAvatar.avatarImageUrl,
+      aiGeneratedDescription: savedAvatar.aiGeneratedDescription,
+      generationSource: savedAvatar.generationSource,
+      avatar: savedAvatar,
+    };
   }
 }

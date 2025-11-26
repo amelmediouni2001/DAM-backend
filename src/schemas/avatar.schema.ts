@@ -61,6 +61,12 @@ export class Avatar {
   @Prop()
   avatarImageUrl: string; // URL to the generated avatar image
 
+  @Prop({ type: String, enum: ['ready-player-me', 'gemini-ai', 'manual'], default: 'manual' })
+  generationSource: string; // Source of avatar generation
+
+  @Prop()
+  aiGeneratedDescription: string; // AI-generated description for the avatar
+
   @Prop({ default: 100 })
   energy: number; // Avatar energy (0-100) for gameplay
 

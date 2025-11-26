@@ -270,4 +270,37 @@ async facebookLogin(token: string) {
       throw new UnauthorizedException('Dev login failed');
     }
   }
+
+  // Update user name
+  async updateUserName(userId: string, newName: string) {
+    try {
+      console.log('Updating user name:', userId, newName);
+      
+      if (!newName || newName.trim().length === 0) {
+        throw new BadRequestException('Name cannot be empty');
+      }
+
+      const user = await this.userModel.findByIdAndUpdate(
+        userId,
+        { name: newName.trim() },
+        { new: true }
+      );
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      console.log('User name updated successfully:', user.name);
+      return {
+        success: true,
+        name: user.name,
+      };
+    } catch (error: any) {
+      console.error('Update name error:', error.message);
+      if (error instanceof BadRequestException || error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update user name');
+    }
+  }
 }

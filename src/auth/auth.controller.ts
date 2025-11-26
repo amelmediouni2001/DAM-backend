@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SocialLoginDto, AuthResponseDto } from './dto/social-login.dto';
 import { DevLoginDto } from './dto/dev-login.dto';
@@ -44,5 +44,12 @@ async googleAuthRedirect(@Request() req) {
         name: req.user.name,
       },
     };
+  }
+
+  @UseGuards(HmacAuthGuard)
+  @Patch('update-name')
+  async updateName(@Request() req, @Body() body: { name: string }) {
+    const userId = req.user._id;
+    return this.authService.updateUserName(userId, body.name);
   }
 }

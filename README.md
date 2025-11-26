@@ -30,6 +30,8 @@ This repository provides a backend API built with NestJS and MongoDB focused on 
 - Forgot / Reset Password flow (token-based)
 - Protected routes with JWT Guards
 - Profile viewing and update
+- **Avatar Management with AI Generation** — Create avatars using Ready Player Me or Gemini AI
+- **Gemini AI Integration** — Generate kid-friendly avatars from text prompts (e.g., "Naruto from anime", "Mickey Mouse")
 
 ## Prerequisites
 
@@ -51,10 +53,23 @@ npm install
 
 ```powershell
 copy .env.example .env
-# then edit .env and add values for MONGODB_URI, JWT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, etc.
+# then edit .env and add values for:
+# - MONGODB_URI (MongoDB connection string)
+# - JWT_SECRET (secret key for JWT tokens)
+# - GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET (for Google OAuth)
+# - FACEBOOK_APP_ID, FACEBOOK_APP_SECRET (for Facebook OAuth)
+# - GEMINI_API_KEY (for AI avatar generation - get from https://makersuite.google.com/app/apikey)
 ```
 
 Note: Ensure MongoDB is reachable by the `MONGODB_URI` value.
+
+### Getting Gemini API Key
+
+To use the AI avatar generation feature:
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Create a new API key
+4. Add it to your `.env` file as `GEMINI_API_KEY=your-key-here`
 
 ## Running
 
@@ -68,7 +83,7 @@ npm run build; npm run start:prod
 
 ## API Endpoints (high level)
 
-Authentication endpoints live under `/auth` and include:
+### Authentication (`/auth`)
 
 - POST `/auth/register` — register with email/password
 - POST `/auth/login` — login with email/password
@@ -77,7 +92,7 @@ Authentication endpoints live under `/auth` and include:
 - POST `/auth/forgot-password` — request password reset
 - POST `/auth/reset-password` — reset using token
 
-Example social login body (simplified):
+Example social login body:
 
 ```json
 {
@@ -86,7 +101,52 @@ Example social login body (simplified):
 }
 ```
 
-Response for auth endpoints typically include `access_token` (JWT). Exact payloads depend on the controller implementations.
+### Avatar Management (`/api/avatars`)
+
+- POST `/api/avatars` — Create a new avatar with customization
+- POST `/api/avatars/generate-from-prompt` — **NEW!** Generate avatar using Gemini AI from text prompt
+- GET `/api/avatars` — Get all avatars for the user
+- GET `/api/avatars/active` — Get the currently active avatar
+- GET `/api/avatars/:avatarId` — Get specific avatar by ID
+- PUT `/api/avatars/:avatarId` — Update avatar details
+- PUT `/api/avatars/:avatarId/active` — Set avatar as active
+- DELETE `/api/avatars/:avatarId` — Delete an avatar
+- PUT `/api/avatars/:avatarId/energy` — Update avatar energy
+- POST `/api/avatars/:avatarId/experience` — Add experience points
+- POST `/api/avatars/:avatarId/outfits/:outfitId/equip` — Equip outfit
+- POST `/api/avatars/:avatarId/outfits/:outfitId/unlock` — Unlock outfit
+
+Example AI avatar generation request:
+
+```json
+{
+  "prompt": "Naruto from anime with orange clothes",
+  "name": "My Naruto Avatar",
+  "style": "anime"
+}
+```
+
+Response includes AI-generated description and suggested attributes:
+
+```json
+{
+  "avatarId": "123abc...",
+  "name": "My Naruto Avatar",
+  "description": "A kid-friendly avatar inspired by ninja characters...",
+  "suggestedAttributes": {
+    "bodyType": "athletic",
+    "skinTone": "light",
+    "hairstyle": "spiky",
+    "hairColor": "blonde",
+    "eyeStyle": "big",
+    "eyeColor": "blue",
+    "clothingType": "sporty",
+    "clothingColor": "orange",
+    "accessories": ["headband", "cape"]
+  },
+  "generationSource": "gemini-ai"
+}
+```
 
 ## Project structure (relevant files)
 
@@ -102,8 +162,20 @@ src/
 │   ├── facebook.strategy.ts
 │   ├── jwt.strategy.ts
 │   └── jwt-auth.guard.ts
+├── avatar/
+│   ├── dto/
+│   │   ├── create-avatar.dto.ts
+│   │   ├── generate-avatar-prompt.dto.ts  ← NEW!
+│   │   └── ...
+│   ├── avatar.controller.ts
+│   ├── avatar.module.ts
+│   └── avatar.service.ts
 ├── schemas/
-│   └── user.schema.ts
+│   ├── user.schema.ts
+│   └── avatar.schema.ts
+├── utils/
+│   ├── gemini.util.ts  ← NEW! (Gemini AI integration)
+│   └── acrcloud.util.ts
 ├── app.module.ts
 └── main.ts
 ```
