@@ -1,8 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SublevelProgress, SublevelProgressDocument } from './schemas/sublevel-progress.schema';
-import { Sublevel, SublevelDocument } from '../sub-level/schema/sublevel.schema';
+import {
+  SublevelProgress,
+  SublevelProgressDocument,
+} from './schemas/sublevel-progress.schema';
+import {
+  Sublevel,
+  SublevelDocument,
+} from '../sub-level/schema/sublevel.schema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { CreateSublevelProgressDto } from './dto/create-sublevel-progress.dto';
 
@@ -45,24 +51,42 @@ export class SublevelProgressService {
   }
 
   // -----------------------------------------------------
-  // GET SUBLEVELS WITH UNLOCK STATE
+  // GET SUBLEVELS WITH UNLOCK STATE (PATCH APPLIED)
   // -----------------------------------------------------
   async getSublevelsForUser(userId: string, levelId: string) {
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    const globalStars = user.level || 0;
-
+    // 1. Load all sublevels for this level
     const sublevels = await this.sublevelModel
       .find({ levelId })
       .sort({ index: 1 });
 
-    const progress = await this.progressModel.find({ userId, levelId });
+    // 2. Load ALL progress for this user (across all levels)
+    const allProgress = await this.progressModel.find({ userId });
 
+    // Build lookup map for quick access
     const progressMap = Object.fromEntries(
-      progress.map((p) => [this.toId(p.sublevelId), p])
+      allProgress.map((p) => [this.toId(p.sublevelId), p]),
     );
 
+    // 3. Compute REAL global stars across ALL sublevels
+    const globalStars = allProgress.reduce((sum, p) => sum + (p.stars || 0), 0);
+
+    // 4. Compute new user.level based on global stars
+    let newLevel = 1;
+    if (globalStars >= 3) newLevel = 2;
+    if (globalStars >= 6) newLevel = 3;
+    if (globalStars >= 9) newLevel = 4;
+    if (globalStars >= 12) newLevel = 5;
+    if (globalStars >= 15) newLevel = 6;
+
+    if (user.level !== newLevel) {
+      user.level = newLevel;
+      await user.save();
+    }
+
+    // 5. Enrich sublevels with unlock state
     let allCompleted = true;
 
     const enriched = sublevels.map((sub) => {
@@ -70,16 +94,17 @@ export class SublevelProgressService {
       const subProgress = progressMap[id];
       const previousIndex = sub.index - 1;
 
-      // -------- Condition A: Required Stars ----------
+      // (A) Required stars for this sublevel
       const hasRequiredStars = globalStars >= sub.requiredStars;
 
-      // -------- Condition B: Previous Sublevel Completed ----------
+      // (B) Previous sublevel completed
       let previousCompleted = true;
       if (previousIndex >= 1) {
         const prev = sublevels.find((s) => s.index === previousIndex);
-        const prevId = prev ? this.toId(prev._id) : null;
-        const prevProgress = prevId ? progressMap[prevId] : null;
-        previousCompleted = !!prevProgress?.completed;
+        if (prev) {
+          const prevProgress = progressMap[this.toId(prev._id)];
+          previousCompleted = !!prevProgress?.completed;
+        }
       }
 
       const unlocked = hasRequiredStars && previousCompleted;
@@ -89,16 +114,12 @@ export class SublevelProgressService {
       return {
         ...sub.toObject(),
         unlocked,
-        stars: subProgress?.stars || 0,
+        starsEarned: subProgress?.stars || 0,
         completed: subProgress?.completed || false,
+        totalStars: globalStars,
+        previousCompleted,
       };
     });
-
-    // Update user level if ALL sublevels completed
-    if (allCompleted) {
-      user.level = user.level + 1;
-      await user.save();
-    }
 
     return enriched;
   }
