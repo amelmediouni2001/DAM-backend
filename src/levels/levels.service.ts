@@ -36,7 +36,7 @@ export class LevelsService implements OnModuleInit {
 
         await this.levelModel.insertMany([
             // ----------------------------
-            // LEVEL 1 – BATMAN
+            // LEVEL 1 – BATMAN (Upper-Left with Sailboat)
             // ----------------------------
             {
                 order: 1,
@@ -44,154 +44,174 @@ export class LevelsService implements OnModuleInit {
                 theme: 'Batman',
                 story: `I'm Batman.
 
-The Riddler hid a noisy machine in Gotham, and it’s making trouble.
+The Riddler hid a noisy machine in Gotham, and it's making trouble.
 I found it, but it only opens with a music puzzle.
 
-That’s where you come in.
+That's where you come in.
 
 Play the notes with me, one by one,
-and together we’ll shut this thing down.
+and together we'll shut this thing down.
 
 Ready, partner?`,
-                expectedNotes: ['sol', 'sol', 'sol', 'mi', 'fa', 'sol', 'la'],
-                difficulty: 2,
+                expectedNotes: ['la', 'sol', 'fa', 're', 're', 're', 'do'],
+                difficulty: 3,
                 backgroundUrl: "https://i.ibb.co/j95259by/gotham.jpg",
                 bossUrl: "https://i.ibb.co/TjVHxYx/riddler.jpg",
                 musicUrl: "https://i.ibb.co/.../batman.mp3",
+                previewAudioUrl: "http://192.168.100.21:3000/audio/levels/batman-preview.mp3",
+                previewDuration: 12,
+                autoPlayPreview: true,
                 colorTheme: "#1A1A1A",
-                mapPosition: { x: 0.08, y: 0.05 },
-                islandImageUrl: "https://i.ibb.co/B2Ktpnpg/level-1.png",
+                mapPosition: { x: 0.20, y: 0.20 }, // Upper-left quadrant
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-1-batman-island.png", // TODO: Replace with imgbb URL
                 nextLevelId: null
             },
 
             // ----------------------------
-            // LEVEL 2 – SPIDER-MAN
+            // LEVEL 2 – SUPERMAN (Middle-Left)
             // ----------------------------
             {
                 order: 2,
+                title: 'Truth, Justice, and Harmony',
+                theme: 'Superman',
+                story: `This is Superman!
+
+A mysterious sound device has appeared in Metropolis,
+and it's disrupting the city's peace.
+
+Only the right melody can unlock its secrets.
+
+With great power comes great responsibility—
+help me play the tune and save the day!`,
+                expectedNotes: ['sol', 'do', 'la', 'sol', 'fa', 'mi', 're', 'do'],
+                difficulty: 3,
+                backgroundUrl: "https://i.ibb.co/XXXXX/superman-bg.jpg", // TODO: Replace with imgbb URL
+                bossUrl: "https://i.ibb.co/XXXXX/superman-boss.jpg", // TODO: Replace with imgbb URL
+                musicUrl: "https://i.ibb.co/XXXXX/superman.mp3", // TODO: Replace with imgbb URL
+                colorTheme: "#0066CC",
+                mapPosition: { x: 0.20, y: 0.50 }, // Middle-left
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-2-superman-island.png", // TODO: Replace with imgbb URL
+                nextLevelId: null
+            },
+
+            // ----------------------------
+            // LEVEL 3 – SPIDER-MAN (Bottom-Left with Treasure Chest)
+            // ----------------------------
+            {
+                order: 3,
                 title: 'Web of Resonance',
                 theme: 'Spider-Man',
                 story: `Hey! Spider-Man here!
 
-Vulture set up a sound machine that’s shaking the city.
-I can’t break it without playing the right melody.
+I found a treasure chest on this island,
+but it's locked with a musical puzzle.
+
+Vulture set up a sound machine that's shaking the city.
+I can't break it without playing the right melody.
 
 Think you can help?
 
-I’ll keep the bad guy busy—
-you play the notes and shut this thing off.
+I'll keep the bad guy busy—
+you play the notes and unlock the treasure!
 
-Let’s do this, hero!`,
-                expectedNotes: ['sol', 'do', 'la', 'sol', 'fa', 'mi', 're', 'do'],
-                difficulty: 3,
-                backgroundUrl: "https://i.ibb.co/MxK9w3Kh/nyc.jpg",
-                bossUrl: "https://i.ibb.co/BVR2MMw6/vulture.jpg",
-                musicUrl: "https://i.ibb.co/.../spider.mp3",
-                colorTheme: "#E53935",
-                mapPosition: { x: 0.3, y: 0.15 },
-                islandImageUrl: "https://i.ibb.co/rfbNcdqG/level-2.png",
-                nextLevelId: null
-            },
-
-            // ----------------------------
-            // LEVEL 3 – MY NEIGHBOR TOTORO
-            // ----------------------------
-            {
-                order: 3,
-                title: 'Forest of Whispers',
-                theme: 'My Neighbor Totoro',
-                story: `Totoro found a curious wooden box humming deep in the forest.
-
-It only reacts to soft, gentle melodies—
-the kind forest spirits love.
-
-Play the tune with Totoro,
-calm the magic inside,
-and help restore peace to the woods.`,
+Let's do this, hero!`,
                 expectedNotes: ['do', 're', 'mi', 'sol', 'mi', 're'],
                 difficulty: 2,
-                backgroundUrl: "https://i.ibb.co/YBV8GHXB/ghibli-bg.png",
-                bossUrl: "https://i.ibb.co/WpY0NrcL/ghibli-boss.png",
-                musicUrl: "https://i.ibb.co/.../totoro.mp3",
-                colorTheme: "#6DA67A",
-                mapPosition: { x: 0.15, y: 0.12 },
-                islandImageUrl: "https://i.ibb.co/B5Nc7Q8Q/level-3.png",
+                backgroundUrl: "https://i.ibb.co/XXXXX/spiderman-bg.jpg", // TODO: Replace with imgbb URL
+                bossUrl: "https://i.ibb.co/XXXXX/spiderman-boss.jpg", // TODO: Replace with imgbb URL
+                musicUrl: "https://i.ibb.co/XXXXX/spiderman.mp3", // TODO: Replace with imgbb URL
+                colorTheme: "#E53935",
+                mapPosition: { x: 0.20, y: 0.80 }, // Bottom-left quadrant
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-3-spiderman-island.png", // TODO: Replace with imgbb URL
                 nextLevelId: null
             },
 
             // ----------------------------
-            // LEVEL 4 – POKÉMON
+            // LEVEL 4 – CAPTAIN AMERICA (Upper-Right with Palm Trees)
             // ----------------------------
             {
                 order: 4,
-                title: 'Melody of the Wild',
-                theme: 'Pokémon',
-                story: `A rare Pokémon triggered a strange sound device in the tall grass.
+                title: 'Shield of Melody',
+                theme: 'Captain America',
+                story: `Captain America here!
 
-It won’t open unless the right tune is played—
-like a Poké Flute melody.
+A strange device has appeared on this tropical island.
+It only responds to the right musical sequence.
 
-Join Pikachu and help uncover what’s inside
-before the wild Pokémon get restless!`,
+I can protect the innocent, but I need your help
+to play the melody that unlocks this mystery.
+
+Together, we can save the day!
+
+Let's make music, soldier!`,
                 expectedNotes: ['mi', 'sol', 'la', 'sol', 'mi', 're'],
                 difficulty: 3,
-                backgroundUrl: "https://i.ibb.co/p6vQth7q/pokemon-bg.jpg",
-                bossUrl: "https://i.ibb.co/v4L7gg9r/pokemon-boss.png",
-                musicUrl: "https://i.ibb.co/.../pokemon.mp3",
-                colorTheme: "#FFCB05",
-                mapPosition: { x: 0.18, y: 0.18 },
-                islandImageUrl: "https://i.ibb.co/tw702J13/level-4.png",
+                backgroundUrl: "https://i.ibb.co/XXXXX/captain-america-bg.jpg", // TODO: Replace with imgbb URL
+                bossUrl: "https://i.ibb.co/XXXXX/captain-america-boss.jpg", // TODO: Replace with imgbb URL
+                musicUrl: "https://i.ibb.co/XXXXX/captain-america.mp3", // TODO: Replace with imgbb URL
+                colorTheme: "#003366",
+                mapPosition: { x: 0.80, y: 0.20 }, // Upper-right quadrant
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-4-captain-america-island.png", // TODO: Replace with imgbb URL
                 nextLevelId: null
             },
 
             // ----------------------------
-            // LEVEL 5 – MARVEL TRIO (Iron Man, Captain America, Flash)
+            // LEVEL 5 – MAGICAL GIRL (Sailor Moon-like, Middle-Right)
             // ----------------------------
             {
                 order: 5,
-                title: 'Heroes in Harmony',
-                theme: 'Marvel Heroes',
-                story: `A runaway energy core is pulsing out of control!
+                title: 'Moonlight Melody',
+                theme: 'Magical Girl',
+                story: `In the name of the moon, I need your help!
 
-Iron Man scanned it, Cap secured the area,
-and Flash says there's only one way to stabilize it—
-play the harmonic sequence it's reacting to.
+A magical device has appeared on this island,
+and it's calling for a special melody.
 
-Three heroes have your back.
-Now play the melody and save the day!`,
+Only someone with a pure heart and musical talent
+can unlock its power.
+
+Will you help me play the right tune
+and restore peace to this magical realm?
+
+Let's fight for love and justice!`,
                 expectedNotes: ['sol', 'fa', 'mi', 're', 'mi', 'fa', 'sol'],
                 difficulty: 4,
-                backgroundUrl: "https://i.ibb.co/zTzhJ8s0/marvel-bg.jpg",
-                bossUrl: "https://i.ibb.co/FkQ8Nk61/marvel-boss.png",
-                musicUrl: "https://i.ibb.co/.../marvel.mp3",
-                colorTheme: "#D32F2F",
-                mapPosition: { x: 0.23, y: 0.20 },
-                islandImageUrl: "https://i.ibb.co/qFyzc2Sj/level-5.png",
+                backgroundUrl: "https://i.ibb.co/XXXXX/magical-girl-bg.jpg", // TODO: Replace with imgbb URL
+                bossUrl: "https://i.ibb.co/XXXXX/magical-girl-boss.jpg", // TODO: Replace with imgbb URL
+                musicUrl: "https://i.ibb.co/XXXXX/magical-girl.mp3", // TODO: Replace with imgbb URL
+                colorTheme: "#FF69B4",
+                mapPosition: { x: 0.80, y: 0.50 }, // Middle-right (unchanged)
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-5-magical-girl-island.png", // TODO: Replace with imgbb URL
                 nextLevelId: null
             },
 
             // ----------------------------
-            // LEVEL 6 – HUNTER X HUNTER
+            // LEVEL 6 – PIRATE SHIP / ROCKY ISLAND (Bottom-Right)
             // ----------------------------
             {
                 order: 6,
-                title: 'Echoes of Nen',
-                theme: 'Hunter x Hunter',
-                story: `Gon and Killua found a mysterious device glowing with Nen energy.
+                title: 'Treasure of the High Seas',
+                theme: 'Pirate',
+                story: `Ahoy there, matey!
 
-It reacts to rhythm, not strength—
-a puzzle only a sharp ear can solve.
+A pirate ship has sailed to this rocky island,
+and we've discovered a mysterious musical treasure.
 
-Join them, play the melody,
-and reveal the secret hidden inside.`,
+The sea monster in these waters won't let us pass
+unless we play the right melody.
+
+Join our crew, play the tune,
+and help us claim the ultimate treasure!
+
+Yo ho ho and a bottle of... music!`,
                 expectedNotes: ['re', 'fa', 'sol', 'la', 'sol', 'fa', 're'],
                 difficulty: 4,
-                backgroundUrl: "https://i.ibb.co/Kj2Btjtb/hxh-bg.png",
-                bossUrl: "https://i.ibb.co/gZTY394g/hxh-boss.png",
-                musicUrl: "https://i.ibb.co/.../hxh.mp3",
-                colorTheme: "#4CAF50",
-                mapPosition: { x: 0.28, y: 0.25 },
-                islandImageUrl: "https://i.ibb.co/5xjvJPQP/level-6.png",
+                backgroundUrl: "https://i.ibb.co/XXXXX/pirate-bg.jpg", // TODO: Replace with imgbb URL
+                bossUrl: "https://i.ibb.co/XXXXX/sea-monster-boss.jpg", // TODO: Replace with imgbb URL (the purple sea monster)
+                musicUrl: "https://i.ibb.co/XXXXX/pirate.mp3", // TODO: Replace with imgbb URL
+                colorTheme: "#8B4513",
+                mapPosition: { x: 0.80, y: 0.80 }, // Bottom-right quadrant
+                islandImageUrl: "https://i.ibb.co/XXXXX/level-6-pirate-island.png", // TODO: Replace with imgbb URL
                 nextLevelId: null
             }
         ]);

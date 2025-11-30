@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Body,
   UploadedFile,
   UseInterceptors,
   BadRequestException,
@@ -8,6 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MusicService } from './music.service';
 import { RecognizeResponseDto } from './dto/recognize-response.dto';
+import { ValidateNoteDto, ValidateNoteResponseDto } from './dto/validate-note.dto';
 
 @Controller('music')
 export class MusicController {
@@ -59,5 +61,16 @@ export class MusicController {
     }
 
     return this.musicService.recognizeSong(file.buffer);
+  }
+
+  /**
+   * Validate piano note frequency
+   * POST /music/validate-note
+   * @param dto - Frequency and expected note
+   * @returns Validation result
+   */
+  @Post('validate-note')
+  validateNote(@Body() dto: ValidateNoteDto): ValidateNoteResponseDto {
+    return this.musicService.validateNote(dto);
   }
 }

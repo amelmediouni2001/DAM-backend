@@ -259,6 +259,113 @@
                 }
             ],
             "description": "Authentication related endpoints"
+        },
+        {
+            "name": "Music",
+            "item": [
+                {
+                    "name": "Validate Note",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"frequency\": 261.5,\n    \"expectedNote\": \"do\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/music/validate-note",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "music",
+                                "validate-note"
+                            ]
+                        },
+                        "description": "Validate if detected frequency matches expected piano note (±5% tolerance)"
+                    },
+                    "response": [
+                        {
+                            "name": "Correct Note (Do)",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"frequency\": 261.5,\n    \"expectedNote\": \"do\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/music/validate-note",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "music",
+                                        "validate-note"
+                                    ]
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "_postman_previewlanguage": "json",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n    \"isCorrect\": true,\n    \"detectedNote\": \"do\",\n    \"expectedNote\": \"do\",\n    \"frequency\": 261.5,\n    \"centsOff\": -1,\n    \"message\": \"Correct! DO detected (-1 cents)\"\n}"
+                        },
+                        {
+                            "name": "Wrong Note",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"frequency\": 293.5,\n    \"expectedNote\": \"do\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/music/validate-note",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "music",
+                                        "validate-note"
+                                    ]
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "_postman_previewlanguage": "json",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n    \"isCorrect\": false,\n    \"detectedNote\": \"re\",\n    \"expectedNote\": \"do\",\n    \"frequency\": 293.5,\n    \"centsOff\": -1,\n    \"message\": \"Wrong note. Expected DO, but detected RE\"\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Music and note validation endpoints"
         }
     ],
     "event": [
