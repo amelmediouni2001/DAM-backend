@@ -7,6 +7,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Serve static files (audio, images) from public directory
+  const express = await import('express');
+  app.use('/audio', express.static('public/audio'));
+  app.use('/images', express.static('public/images'));
+
   // Enable CORS for Android emulator and local development
   app.enableCors({
     origin: true, // Allow all origins for development

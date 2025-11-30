@@ -53,11 +53,14 @@ Play the notes with me, one by one,
 and together we'll shut this thing down.
 
 Ready, partner?`,
-                expectedNotes: ['sol', 'sol', 'sol', 'mi', 'fa', 'sol', 'la'],
-                difficulty: 2,
-                backgroundUrl: "https://i.ibb.co/XXXXX/batman-bg.jpg", // TODO: Replace with imgbb URL
-                bossUrl: "https://i.ibb.co/XXXXX/batman-boss.jpg", // TODO: Replace with imgbb URL
-                musicUrl: "https://i.ibb.co/XXXXX/batman.mp3", // TODO: Replace with imgbb URL
+                expectedNotes: ['la', 'sol', 'fa', 're', 're', 're', 'do'],
+                difficulty: 3,
+                backgroundUrl: "https://i.ibb.co/j95259by/gotham.jpg",
+                bossUrl: "https://i.ibb.co/TjVHxYx/riddler.jpg",
+                musicUrl: "https://i.ibb.co/.../batman.mp3",
+                previewAudioUrl: "http://192.168.100.21:3000/audio/levels/batman-preview.mp3",
+                previewDuration: 12,
+                autoPlayPreview: true,
                 colorTheme: "#1A1A1A",
                 mapPosition: { x: 0.20, y: 0.20 }, // Upper-left quadrant
                 islandImageUrl: "https://i.ibb.co/XXXXX/level-1-batman-island.png", // TODO: Replace with imgbb URL
