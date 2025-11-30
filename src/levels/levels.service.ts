@@ -50,14 +50,17 @@ I found it, but it only opens with a music puzzle.
 That’s where you come in.
 
 Play the notes with me, one by one,
-and together we’ll shut this thing down.
+and together we'll shut this thing down.
 
 Ready, partner?`,
-                expectedNotes: ['sol', 'sol', 'sol', 'mi', 'fa', 'sol', 'la'],
-                difficulty: 2,
+                expectedNotes: ['la', 'sol', 'fa', 're', 're', 're', 'do'],
+                difficulty: 3,
                 backgroundUrl: "https://i.ibb.co/j95259by/gotham.jpg",
                 bossUrl: "https://i.ibb.co/TjVHxYx/riddler.jpg",
                 musicUrl: "https://i.ibb.co/.../batman.mp3",
+                previewAudioUrl: "http://192.168.100.21:3000/audio/levels/batman-preview.mp3",
+                previewDuration: 12,
+                autoPlayPreview: true,
                 colorTheme: "#1A1A1A",
                 mapPosition: { x: 0.08, y: 0.05 },
                 islandImageUrl: "https://i.ibb.co/B2Ktpnpg/level-1.png",

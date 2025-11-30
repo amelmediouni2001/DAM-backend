@@ -30,6 +30,15 @@ export class Level {
   @Prop({ required: false })
   musicUrl: string;
 
+  @Prop({ required: false })
+  previewAudioUrl: string;  // Song preview URL to play before gameplay
+
+  @Prop({ required: false, default: 10 })
+  previewDuration: number;  // Duration in seconds (for UI progress)
+
+  @Prop({ required: false, default: false })
+  autoPlayPreview: boolean;  // Auto-play on level load
+
   @Prop({ required: false, default: 0 })
   starsUnlocked: number;
 
