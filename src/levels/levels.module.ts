@@ -14,5 +14,6 @@ import { LevelProgress, LevelProgressSchema } from './schemas/progress.schema';
   ],
   controllers: [LevelsController],
   providers: [LevelsService],
+  exports: [MongooseModule]
 })
 export class LevelsModule {}
