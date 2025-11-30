@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ACRCloudUtil } from '../utils/acrcloud.util';
 import { RecognizeResponseDto } from './dto/recognize-response.dto';
+import { ValidateNoteDto, ValidateNoteResponseDto } from './dto/validate-note.dto';
 
 @Injectable()
 export class MusicService {
@@ -103,6 +104,74 @@ export class MusicService {
       artist: music.artists?.map((a: any) => a.name).join(', ') || 'Unknown',
       album: music.album?.name || 'Unknown',
       confidence: music.score || 0,
+    };
+  }
+
+  /**
+   * Validate if detected frequency matches expected note
+   * Uses ±5% tolerance (same as Android/iOS frontend)
+   * @param dto - Frequency and expected note
+   * @returns Validation result with detected note
+   */
+  validateNote(dto: ValidateNoteDto): ValidateNoteResponseDto {
+    const { frequency, expectedNote } = dto;
+
+    // Musical note frequencies (Middle C octave - C4 to B4)
+    const noteFrequencies: Record<string, number> = {
+      do: 261.63,   // C4
+      re: 293.66,   // D4
+      mi: 329.63,   // E4
+      fa: 349.23,   // F4
+      sol: 392.00,  // G4
+      la: 440.00,   // A4
+      si: 493.88,   // B4
+    };
+
+    // Normalize input
+    const normalizedExpected = expectedNote.toLowerCase()
+      .replace(/é|è|ê/g, 'e')
+      .replace(/à/g, 'a')
+      .trim();
+
+    // Find closest note to detected frequency
+    let closestNote: string | null = null;
+    let minDistance = Infinity;
+
+    for (const [note, targetFreq] of Object.entries(noteFrequencies)) {
+      const distance = Math.abs(frequency - targetFreq);
+      const tolerance = targetFreq * 0.05; // 5% tolerance
+
+      if (distance < minDistance && distance < tolerance) {
+        minDistance = distance;
+        closestNote = note;
+      }
+    }
+
+    if (!closestNote) {
+      return {
+        isCorrect: false,
+        detectedNote: 'none',
+        expectedNote: normalizedExpected,
+        frequency,
+        message: `Frequency ${frequency.toFixed(1)} Hz doesn't match any note (out of range or too far from target)`,
+      };
+    }
+
+    // Calculate cents off (for tuning feedback)
+    const targetFreq = noteFrequencies[closestNote];
+    const centsOff = 1200 * Math.log2(frequency / targetFreq);
+
+    const isCorrect = closestNote === normalizedExpected;
+
+    return {
+      isCorrect,
+      detectedNote: closestNote,
+      expectedNote: normalizedExpected,
+      frequency,
+      centsOff: Math.round(centsOff),
+      message: isCorrect 
+        ? `Correct! ${closestNote.toUpperCase()} detected (${centsOff >= 0 ? '+' : ''}${Math.round(centsOff)} cents)`
+        : `Wrong note. Expected ${normalizedExpected.toUpperCase()}, but detected ${closestNote.toUpperCase()}`,
     };
   }
 }
