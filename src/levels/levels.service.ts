@@ -21,6 +21,8 @@ interface UnlockedLevel {
 
 @Injectable()
 export class LevelsService implements OnModuleInit {
+    private readonly baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+
     constructor(
     @InjectModel(Level.name)
     private levelModel: Model<LevelDocument>,
@@ -58,7 +60,7 @@ Ready, partner?`,
                 backgroundUrl: "https://i.ibb.co/j95259by/gotham.jpg",
                 bossUrl: "https://i.ibb.co/TjVHxYx/riddler.jpg",
                 musicUrl: "https://i.ibb.co/.../batman.mp3",
-                previewAudioUrl: "http://192.168.100.21:3000/audio/levels/batman-preview.mp3",
+                previewAudioUrl: `${this.baseUrl}/audio/levels/batman-preview.mp3`,
                 previewDuration: 12,
                 autoPlayPreview: true,
                 colorTheme: "#1A1A1A",

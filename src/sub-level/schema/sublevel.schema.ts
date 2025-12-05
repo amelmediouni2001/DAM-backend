@@ -25,6 +25,20 @@ export class Sublevel {
   index: number;
 
   @ApiProperty({
+    description: 'Title of the sublevel',
+    example: 'Discover the Notes',
+  })
+  @Prop({ required: false })
+  title: string;
+
+  @ApiProperty({
+    description: 'Short description or goal for the sublevel',
+    example: 'Learn the first 2 notes and feel the Batman vibe!',
+  })
+  @Prop({ required: false })
+  description: string;
+
+  @ApiProperty({
     description: 'Difficulty from 1 to 5',
     example: 3,
   })

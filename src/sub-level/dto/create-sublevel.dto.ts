@@ -22,6 +22,24 @@ export class CreateSublevelDto {
   index: number;
 
   @ApiProperty({
+    description: 'Title of the sublevel',
+    example: 'Discover the Notes',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiProperty({
+    description: 'Description or goal of the sublevel',
+    example: 'Learn the first 2 notes and feel the Batman vibe!',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiProperty({
     description: 'Difficulty level (1–5)',
     example: 3,
   })

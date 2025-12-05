@@ -39,53 +39,68 @@ export class SublevelSeeder {
     }
 
     // -----------------------------------------
-    // CREATE SUBLEVELS FOR LEVEL 1
+    // CREATE SUBLEVELS FOR LEVEL 1 (BATMAN)
     // -----------------------------------------
     const level1Subs = [
+      // Sublevel 1 — "Discover the Notes"
       {
         levelId: level1._id,
         index: 1,
+        title: 'Discover the Notes',
+        description: 'Learn the first 2 notes: La – Sol. Feel the Batman vibe!',
         difficulty: 1,
-        notes: ['do', 're', 'mi'],
+        notes: ['la', 'sol'],
         maxStars: 3,
         requiredStars: 0,
-        trackName: 'Level 1 - Easy Intro',
+        trackName: 'Batman Theme - Intro',
       },
+      // Sublevel 2 — "Mini Theme Build-Up"
       {
         levelId: level1._id,
         index: 2,
+        title: 'Mini Theme Build-Up',
+        description: 'Add the next note: La – Sol – Fa. Introduces the jump from Sol → Fa.',
         difficulty: 2,
-        notes: ['fa', 'sol', 'la', 'si'],
+        notes: ['la', 'sol', 'fa'],
         maxStars: 3,
-        requiredStars: 3,
-        trackName: 'Level 1 - Melody A',
+        requiredStars: 1,
+        trackName: 'Batman Theme - Pattern',
       },
+      // Sublevel 3 — "Hero Descent"
       {
         levelId: level1._id,
         index: 3,
+        title: 'Hero Descent',
+        description: 'Introduce the descent to Ré: Fa – Ré. Short, simple, but feels heroic!',
         difficulty: 3,
-        notes: ['do', 'sol', 'do', 'fa'],
+        notes: ['fa', 'ré'],
         maxStars: 3,
-        requiredStars: 6,
-        trackName: 'Level 1 - Melody B',
+        requiredStars: 3,
+        trackName: 'Batman Theme - Drop',
       },
+      // Sublevel 4 — "The Dramatic Moment"
       {
         levelId: level1._id,
         index: 4,
+        title: 'The Dramatic Moment',
+        description: 'Hold the dramatic long Batman notes: Ré — Ré — Do',
         difficulty: 4,
-        notes: ['la', 'fa', 're', 'do', 'mi'],
+        notes: ['ré', 'ré', 'do'],
         maxStars: 3,
-        requiredStars: 9,
-        trackName: 'Level 1 - Melody C',
+        requiredStars: 6,
+        trackName: 'Batman Theme - Climax',
       },
+      // Sublevel 5 — "Play the Hero!" (Full Melody)
       {
         levelId: level1._id,
         index: 5,
+        title: 'Play the Hero!',
+        description: 'Complete the full Batman phrase: La – Sol – Fa – Ré – Ré – Ré – Do',
         difficulty: 5,
-        notes: ['do', 'mi', 'sol', 'do', 'sol', 'mi'],
+        notes: ['la', 'sol', 'fa', 'ré', 'ré', 'ré', 'do'],
         maxStars: 3,
-        requiredStars: 12,
-        trackName: 'Level 1 - Boss Theme',
+        requiredStars: 9,
+        trackName: 'Batman Theme - Full',
       },
     ];
 
