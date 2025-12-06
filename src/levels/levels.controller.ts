@@ -44,5 +44,13 @@ export class LevelsController {
     }
 
 
+    @Get("total-stars/:userId")
+    @ApiOperation({ summary: 'Get total stars for a specific user' })
+    @ApiParam({ name: 'userId', description: 'User ID' })
+    async getTotalStars(@Param("userId") userId: string) {
+      return this.levelsService.getUserTotalStars(userId);
+    }
+
+
 
 }
