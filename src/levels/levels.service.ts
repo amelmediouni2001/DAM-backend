@@ -41,7 +41,7 @@ export class LevelsService implements OnModuleInit {
     if (count === 0) {
         console.log('🌱 Seeding levels...');
 
-        await this.levelModel.insertMany([
+        const insertedLevels = await this.levelModel.insertMany([
     // ------------------------------------------------
     // LEVEL 1 – BATMAN (Shadowy Island)
     // ------------------------------------------------
@@ -86,10 +86,13 @@ The only way to calm everything down is to play a melody.
 
 Think you can help me?
 Let’s swing into it and play the notes together!`,
-        expectedNotes: ['sol', 'la', 'sol', 'do', 'fa', 'la', 'do'],
+        expectedNotes: ['ré', 'fa', 'la', 'sol#', 'fa', 'ré', 'ré', 'fa', 'la', 'la#', 'la', 'sol#', 'fa', 'ré'],
         difficulty: 3,
         backgroundUrl: "https://i.ibb.co/XXXXX/spiderman-bg.jpg",
         musicUrl: "https://i.ibb.co/XXXXX/spiderman.mp3",
+        previewAudioUrl: `${this.baseUrl}/audio/levels/spiderman-preview.mp3`,
+        previewDuration: 12,
+        autoPlayPreview: true,
         colorTheme: "#E53935",
         mapPosition: { x: 0.20, y: 0.50 },
         islandImageUrl: "https://i.ibb.co/rfbNcdqG/level-2.png",
@@ -206,6 +209,15 @@ Let’s play together and keep the adventure going!`,
     }
 ]);
 
+        // Set nextLevelId to unlock next level
+        for (let i = 0; i < insertedLevels.length - 1; i++) {
+            await this.levelModel.findByIdAndUpdate(
+                insertedLevels[i]._id,
+                { nextLevelId: insertedLevels[i + 1]._id },
+                { new: true }
+            );
+        }
+
     console.log('🌱 Levels seeded successfully!');
     }
 }
@@ -225,29 +237,34 @@ Let’s play together and keep the adventure going!`,
     }
 
     async getUnlockedLevels(userId: string): Promise<UnlockedLevelsResponseDto> {
-    const levels = await this.levelModel.find().lean();
-    const progressList = await this.progressModel.find({ userId }).lean();
+    const levels = await this.levelModel.find().sort({ order: 1 }).lean();
+    
+    // Get sublevel progress to check if user has completed any sublevels per level
+    const sublevelProgress = await this.sublevelProgressModel.find({ userId }).lean();
 
-    // Map user progress by levelId
-    const progressByLevel: Record<string, number> = {};
-    progressList.forEach(p => {
-        progressByLevel[p.levelId] = Math.max(progressByLevel[p.levelId] || 0, p.stars || 0);
+    // Map stars earned per level by summing sublevel stars
+    const starsByLevel: Record<string, number> = {};
+    sublevelProgress.forEach(sp => {
+        const levelIdStr = sp.levelId.toString();
+        starsByLevel[levelIdStr] = (starsByLevel[levelIdStr] || 0) + (sp.stars || 0);
     });
 
     const result = levels.map((lvl, index) => {
         const levelId = lvl._id.toString();
 
+        // Level 1 (index 0) is always unlocked
+        // Other levels unlock if previous level has ANY stars earned
         const isUnlocked =
         index === 0
             ? true
-            : (progressByLevel[levels[index - 1]._id.toString()] ?? 0) > 0;
+            : (starsByLevel[levels[index - 1]._id.toString()] ?? 0) > 0;
 
         return {
         levelId,
         title: lvl.title,
         theme: lvl.theme,
         unlocked: isUnlocked,
-        starsUnlocked: progressByLevel[levelId] || 0, // ⬅ REAL PROGRESS
+        starsUnlocked: starsByLevel[levelId] || 0,
         backgroundUrl: lvl.backgroundUrl,
         bossUrl: lvl.bossUrl,
         musicUrl: lvl.musicUrl

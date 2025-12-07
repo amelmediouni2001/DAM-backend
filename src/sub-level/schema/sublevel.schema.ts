@@ -53,6 +53,14 @@ export class Sublevel {
   notes: string[];
 
   @ApiProperty({
+    description: 'Note durations: "short" for quick tap, "long" for hold',
+    example: ['short', 'short', 'long', 'long'],
+    required: false,
+  })
+  @Prop({ type: [String], required: false })
+  noteDurations?: string[];
+
+  @ApiProperty({
     description: 'Maximum stars that can be earned',
     example: 3,
   })
