@@ -47,18 +47,19 @@ export class Sublevel {
 
   @ApiProperty({
     description: 'Sequence of musical notes required to complete this sublevel',
-    example: ['do', 're', 'mi', 'fa'],
+    example: [
+      { type: 'note', note: 'do', duration: 'short' },
+      { type: 'note', note: 're', duration: 'short' },
+      { type: 'chord', notes: ['do', 'mi'], duration: 'long' }
+    ],
   })
-  @Prop({ type: [String], required: true })
-  notes: string[];
-
-  @ApiProperty({
-    description: 'Note durations: "short" for quick tap, "long" for hold',
-    example: ['short', 'short', 'long', 'long'],
-    required: false,
-  })
-  @Prop({ type: [String], required: false })
-  noteDurations?: string[];
+  @Prop({ type: [{
+    type: { type: String, enum: ['note', 'chord'], required: true },
+    note: { type: String },
+    notes: { type: [String] },
+    duration: { type: String, enum: ['short', 'medium', 'long', 'very_long'] }
+  }], required: true })
+  notes: any[];
 
   @ApiProperty({
     description: 'Maximum stars that can be earned',

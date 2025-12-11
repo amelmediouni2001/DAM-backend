@@ -3,14 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import serveStatic from 'serve-static';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Serve static files (audio, images) from public directory
-  const express = await import('express');
-  app.use('/audio', express.static('public/audio'));
-  app.use('/images', express.static('public/images'));
+  const publicPath = join(process.cwd(), 'public');
+  app.use('/audio', serveStatic(join(publicPath, 'audio')));
+  app.use('/images', serveStatic(join(publicPath, 'images')));
 
   // Enable CORS for Android emulator and local development
   app.enableCors({
@@ -59,7 +61,7 @@ async function bootstrap() {
 
   await app.listen(3000, '0.0.0.0'); // Listen on all network interfaces
   console.log('✅ Server running on http://0.0.0.0:3000');
-  console.log('🌐 Access from Android: http://192.168.1.103:3000');
+  console.log('🌐 Access from Android: http://192.168.100.56:3000');
   console.log('📚 Swagger documentation available at http://localhost:3000/api/docs');
 }
 bootstrap();

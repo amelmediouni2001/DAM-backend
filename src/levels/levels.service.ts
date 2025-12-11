@@ -23,7 +23,7 @@ interface UnlockedLevel {
 
 @Injectable()
 export class LevelsService implements OnModuleInit {
-    private readonly baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    private readonly baseUrl = (process.env.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 
     constructor(
     @InjectModel(Level.name)
@@ -35,6 +35,36 @@ export class LevelsService implements OnModuleInit {
     @InjectModel(SublevelProgress.name)
     private readonly sublevelProgressModel: Model<SublevelProgress>,
     ) {}
+
+    private normalizePreviewPath(raw?: string): string | undefined {
+    if (!raw) {
+        return undefined;
+    }
+
+    try {
+        const parsed = raw.startsWith('http') ? new URL(raw) : new URL(raw, this.baseUrl);
+        const pathname = parsed.pathname || '/';
+        return pathname.startsWith('/') ? pathname : `/${pathname}`;
+    } catch {
+        return raw.startsWith('/') ? raw : `/${raw}`;
+    }
+    }
+
+    private resolvePreviewUrl(raw?: string): string | undefined {
+    const path = this.normalizePreviewPath(raw);
+    return path ? `${this.baseUrl}${path}` : undefined;
+    }
+
+    private mapPreviewUrl<T extends { previewAudioUrl?: string }>(level: T | null): T | null {
+    if (!level) {
+        return level;
+    }
+
+    return {
+        ...level,
+        previewAudioUrl: this.resolvePreviewUrl(level.previewAudioUrl),
+    };
+    }
 
     async onModuleInit() {
     const count = await this.levelModel.countDocuments();
@@ -62,7 +92,7 @@ Let’s play the melody and save the night!`,
         difficulty: 3,
         backgroundUrl: "https://i.ibb.co/j95259by/gotham.jpg",
         musicUrl: "https://i.ibb.co/.../batman.mp3",
-        previewAudioUrl: `${this.baseUrl}/audio/levels/batman-preview.mp3`,
+        previewAudioUrl: '/audio/levels/batman-preview.mp3',
         previewDuration: 12,
         autoPlayPreview: true,
         colorTheme: "#1A1A1A",
@@ -90,7 +120,7 @@ Let’s swing into it and play the notes together!`,
         difficulty: 3,
         backgroundUrl: "https://i.ibb.co/XXXXX/spiderman-bg.jpg",
         musicUrl: "https://i.ibb.co/XXXXX/spiderman.mp3",
-        previewAudioUrl: `${this.baseUrl}/audio/levels/spiderman-preview.mp3`,
+        previewAudioUrl: '/audio/levels/spiderman-preview.mp3',
         previewDuration: 12,
         autoPlayPreview: true,
         colorTheme: "#E53935",
@@ -121,6 +151,7 @@ Ready, detective?`,
     difficulty: 2,
     backgroundUrl: "https://i.ibb.co/XXXXX/conan-bg.jpg",
     musicUrl: "https://i.ibb.co/XXXXX/conan.mp3",
+    previewAudioUrl: "/audio/levels/conan-preview.mp3",
     colorTheme: "#1E4BA3", // Conan blue
     mapPosition: { x: 0.20, y: 0.80 },
     islandImageUrl: "https://i.ibb.co/B5Nc7Q8Q/level-3.png",
@@ -224,7 +255,8 @@ Let’s play together and keep the adventure going!`,
 
 
     async findOne(id: string) {
-        return this.levelModel.findById(id);
+        const level = await this.levelModel.findById(id).lean();
+        return this.mapPreviewUrl(level);
     }
 
     async saveProgress(dto: CreateProgressDto) {
@@ -233,11 +265,12 @@ Let’s play together and keep the adventure going!`,
     }
 
     async findAll() {
-    return this.levelModel.find();
+    const levels = await this.levelModel.find().lean();
+    return levels.map((lvl) => this.mapPreviewUrl(lvl)!);
     }
 
     async getUnlockedLevels(userId: string): Promise<UnlockedLevelsResponseDto> {
-    const levels = await this.levelModel.find().sort({ order: 1 }).lean();
+    const levels = (await this.levelModel.find().sort({ order: 1 }).lean()).map((lvl) => this.mapPreviewUrl(lvl)!);
     
     // Get sublevel progress to check if user has completed any sublevels per level
     const sublevelProgress = await this.sublevelProgressModel.find({ userId }).lean();

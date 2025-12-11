@@ -8,7 +8,7 @@ import { MongoClient } from 'mongodb';
  */
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/piano-game';
-const SERVER_IP = '192.168.153.159'; // Update with your IP
+const SERVER_IP = '192.168.100.56'; // Update with your IP
 const SERVER_PORT = '3000';
 
 async function updateBatmanLevel() {
