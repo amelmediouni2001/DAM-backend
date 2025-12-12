@@ -50,6 +50,28 @@ export class SublevelProgressService {
     return this.getSublevelsForUser(dto.userId, dto.levelId);
   }
 
+  // Helper to transform notes for Android app compatibility
+  private transformNotesForAndroid(notes: any[]): { notes: string[], noteDurations: string[] } {
+    const notesList: string[] = [];
+    const durationsList: string[] = [];
+
+    notes.forEach((noteObj) => {
+      if (noteObj.type === 'note') {
+        // Single note: add the note name
+        notesList.push(noteObj.note);
+        durationsList.push(noteObj.duration || 'short');
+      } else if (noteObj.type === 'chord') {
+        // Chord: take only the first note from the chord
+        if (noteObj.notes && Array.isArray(noteObj.notes) && noteObj.notes.length > 0) {
+          notesList.push(noteObj.notes[0]);
+          durationsList.push(noteObj.duration || 'short');
+        }
+      }
+    });
+
+    return { notes: notesList, noteDurations: durationsList };
+  }
+
   // -----------------------------------------------------
   // GET SUBLEVELS WITH UNLOCK STATE (PATCH APPLIED)
   // -----------------------------------------------------
@@ -111,8 +133,14 @@ export class SublevelProgressService {
 
       if (!subProgress?.completed) allCompleted = false;
 
+      // Transform notes for Android app compatibility
+      const { notes, noteDurations } = this.transformNotesForAndroid(sub.notes || []);
+
+      const subObj = sub.toObject();
       return {
-        ...sub.toObject(),
+        ...subObj,
+        notes, // Transformed to simple string array
+        noteDurations, // Extracted durations
         unlocked,
         starsEarned: subProgress?.stars || 0,
         completed: subProgress?.completed || false,

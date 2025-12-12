@@ -17,7 +17,7 @@ export class SublevelProgressController {
   }
 
   // GET ALL SUBLEVELS WITH UNLOCK STATE
-  @Get('/:userId/:levelId')
+  @Get(':userId/:levelId')
   @ApiOperation({ summary: 'Get all sublevels enriched with unlock state & progress' })
   @ApiParam({ name: 'userId', description: 'User ID' })
   @ApiParam({ name: 'levelId', description: 'Level ID' })

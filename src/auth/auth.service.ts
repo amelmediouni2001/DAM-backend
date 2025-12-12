@@ -244,13 +244,11 @@ async facebookLogin(token: string) {
     try {
       console.log('Dev login attempt:', email, name);
 
-      // Find or create user with local provider
-      let user = await this.userModel.findOne({
-        email,
-        provider: 'local',
-      });
+      // First, try to find user by email (regardless of provider)
+      let user = await this.userModel.findOne({ email });
 
       if (!user) {
+        // User doesn't exist, create new one
         const devProviderId = `dev_${Date.now()}`;
         user = await this.userModel.create({
           email,
@@ -261,7 +259,19 @@ async facebookLogin(token: string) {
         });
         console.log('Dev user created:', user._id);
       } else {
-        console.log('Dev user found:', user._id);
+        // User exists - update provider to 'local' if not already set
+        if (!user.provider) {
+          user.provider = 'local';
+        }
+        if (!user.providerId) {
+          user.providerId = `dev_${Date.now()}`;
+        }
+        // Update name if provided and different
+        if (name && name !== user.name) {
+          user.name = name;
+        }
+        await user.save();
+        console.log('Dev user found and updated:', user._id);
       }
 
       return this.generateAuthResponse(user);

@@ -19,15 +19,55 @@ export class SublevelsService {
         return sublevel.save();
     }
 
+    // Helper to transform notes for Android app compatibility
+    private transformNotesForAndroid(notes: any[]): { notes: string[], noteDurations: string[] } {
+        const notesList: string[] = [];
+        const durationsList: string[] = [];
+
+        notes.forEach((noteObj) => {
+            if (noteObj.type === 'note') {
+                // Single note: add the note name
+                notesList.push(noteObj.note);
+                durationsList.push(noteObj.duration || 'short');
+            } else if (noteObj.type === 'chord') {
+                // Chord: take only the first note from the chord
+                if (noteObj.notes && Array.isArray(noteObj.notes) && noteObj.notes.length > 0) {
+                    notesList.push(noteObj.notes[0]);
+                    durationsList.push(noteObj.duration || 'short');
+                }
+            }
+        });
+
+        return { notes: notesList, noteDurations: durationsList };
+    }
+
     async findAll() {
-        return this.sublevelModel.find().populate('levelId').exec();
+        const sublevels = await this.sublevelModel.find().populate('levelId').lean().exec();
+        return sublevels.map(sub => {
+            const { notes, noteDurations } = this.transformNotesForAndroid(sub.notes || []);
+            return {
+                ...sub,
+                notes,
+                noteDurations
+            };
+        });
     }
 
     async findByLevel(levelId: string){
-        return this.sublevelModel
+        const sublevels = await this.sublevelModel
         .find({levelId})
         .sort({index: 1})
+        .lean()
         .exec();
+        
+        return sublevels.map(sub => {
+            const { notes, noteDurations } = this.transformNotesForAndroid(sub.notes || []);
+            return {
+                ...sub,
+                notes,
+                noteDurations
+            };
+        });
     }
 
     async findOne(id: string){
