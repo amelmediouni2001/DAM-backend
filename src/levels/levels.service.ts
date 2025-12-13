@@ -191,12 +191,12 @@ will you help protect Wakanda with music?`,
 },
 
     // ------------------------------------------------
-    // LEVEL 5 – AVENGERS HEROES (Iron Man + Cap + Flash)
+    // LEVEL 5 – RONIN WARRIORS
     // ------------------------------------------------
     {
         order: 5,
         title: 'Heroes of Harmony',
-        theme: 'Avengers Mix',
+        theme: 'Ronin Warriors',
         story: `Welcome, young hero!
 
 Some friendly heroes left a super melody here.
@@ -210,6 +210,9 @@ Ready to play like a hero?`,
         difficulty: 4,
         backgroundUrl: "https://i.ibb.co/XXXXX/avengers-bg.jpg",
         musicUrl: "https://i.ibb.co/XXXXX/avengers.mp3",
+        previewAudioUrl: '/audio/levels/RoninWarriors-preview.mp3',
+        previewDuration: 12,
+        autoPlayPreview: true,
         colorTheme: "#FF0000",
         mapPosition: { x: 0.80, y: 0.50 },
         islandImageUrl: "https://i.ibb.co/qFyzc2Sj/level-5.png",
