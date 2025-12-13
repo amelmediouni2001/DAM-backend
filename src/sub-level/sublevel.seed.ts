@@ -193,6 +193,8 @@ export class SublevelSeeder {
       { type: 'note', note: 'La', duration: 'short' },
       { type: 'note', note: 'Sol#', duration: 'short' },
       { type: 'note', note: 'Fa', duration: 'short' },
+      { type: 'note', note: 'Re', duration: 'short' },
+
     ],
     maxStars: 3,
     requiredStars: 21,
