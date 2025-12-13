@@ -195,17 +195,18 @@ will you help protect Wakanda with music?`,
     // ------------------------------------------------
     {
         order: 5,
-        title: 'Heroes of Harmony',
+        title: 'Blades of Honor',
         theme: 'Ronin Warriors',
-        story: `Welcome, young hero!
+                story: `Welcome, young warrior!
 
-Some friendly heroes left a super melody here.
-Iron Man, Captain America, and even The Flash
-want you to try their musical patterns!
+Legendary ronin once trained on this path,
+their blades moving like music in the wind.
+Each rhythm follows discipline, courage,
+and the silent strength of the samurai.
 
-Each part feels strong, bright, and fast.
+Every note must be precise and focused.
 
-Ready to play like a hero?`,
+Are you ready to play with the spirit of a ronin?`,
         expectedNotes: ['mi', 'do', 're', 'mi', 'sol', 'la', 'sol'],
         difficulty: 4,
         backgroundUrl: "https://i.ibb.co/XXXXX/avengers-bg.jpg",

@@ -449,8 +449,8 @@ const level5Subs = [
   {
     levelId: level5._id,
     index: 1,
-    title: 'Suit Up!',
-    description: 'Start with Iron Man\'s heavy tones: Mi – Do.',
+    title: 'Path of the Blade',
+    description: 'Begin with the ronin’s steady stance',
     difficulty: 1,
     notes: [
       { type: 'note', note: 'Do', duration: 'short' },
@@ -464,13 +464,13 @@ const level5Subs = [
     ],
     maxStars: 3,
     requiredStars: 30,
-    trackName: 'Iron Man Intro',
+    trackName: 'Path of the Blade',
   },
   {
     levelId: level5._id,
     index: 2,
-    title: 'Avengers Signal',
-    description: 'Captain America\'s heroic rise: Do – Ré – Mi.',
+    title: 'Call of Honor',
+    description: 'A rising rhythm guided by discipline',
     difficulty: 2,
     notes: [
       { type: 'note', note: 'Do', duration: 'short' },
@@ -483,13 +483,13 @@ const level5Subs = [
     ],
     maxStars: 3,
     requiredStars: 33,
-    trackName: 'Captain America Rise',
+    trackName: 'Call of Honor',
   },
   {
     levelId: level5._id,
     index: 3,
-    title: 'Flash Speed Run!',
-    description: 'Fast sequence inspired by Flash.',
+    title: 'Shadow Dash',
+    description: 'A swift sequence like a silent strike.',
     difficulty: 3,
     notes: [
       { type: 'note', note: 'Re', duration: 'short' },
@@ -502,13 +502,13 @@ const level5Subs = [
     ],
     maxStars: 3,
     requiredStars: 36,
-    trackName: 'Flash Sprint',
+    trackName: 'Shadow Dash',
   },
   {
     levelId: level5._id,
     index: 4,
-    title: 'Hero Combo',
-    description: 'Combine Iron Man + Cap motifs.',
+    title: 'Ronin Technique',
+    description: 'Combine balance and precision into one flow.',
     difficulty: 4,
     notes: [
       { type: 'note', note: 'Re', duration: 'short' },
@@ -527,13 +527,13 @@ const level5Subs = [
     ],
     maxStars: 3,
     requiredStars: 39,
-    trackName: 'Avengers Combined',
+    trackName: 'Ronin Technique',
   },
   {
     levelId: level5._id,
     index: 5,
-    title: 'Avengers Assemble!',
-    description: 'Final epic theme combining all heroes.',
+    title: 'Way of the Ronin',
+    description: 'The final form—master every rhythm of the warrior.',
     difficulty: 5,
     notes: [
       // Sublevel 1
@@ -578,7 +578,7 @@ const level5Subs = [
     ],
     maxStars: 3,
     requiredStars: 42,
-    trackName: 'Avengers Final Theme',
+    trackName: 'Way of the Ronin',
   },
 ];
 
