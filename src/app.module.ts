@@ -8,6 +8,7 @@ import { MusicModule } from './music/music.module';
 import { SublevelsModule } from 'sub-level/sublevel.module';
 import { SublevelSeeder } from './sub-level/sublevel.seed';
 import { SublevelProgressModule } from 'sublevel-progress/sublevel-progress.module';
+import { PlayHistoryModule } from './play-history/play-history.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SublevelProgressModule } from 'sublevel-progress/sublevel-progress.modu
     MusicModule,
     SublevelsModule,
     SublevelProgressModule,
+    PlayHistoryModule,
   ],
 })
 export class AppModule implements OnModuleInit {
